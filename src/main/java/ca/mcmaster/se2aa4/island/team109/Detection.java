@@ -1,10 +1,11 @@
 package ca.mcmaster.se2aa4.island.team109;
-import java.util.Arrays;
-import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Detection{
+
+
     private boolean IsdetectedR = false;
     private boolean IsdetectedL = false;
     private boolean IsdetectedF = false;
@@ -13,9 +14,14 @@ public class Detection{
     Direction detectDir;
     private final Logger logger = LogManager.getLogger();
 
+    
+    
+    
+
     public Detection(Direction dir){
-        currentDir = new Direction();
         detectDir = dir;
+        currentDir = new Direction(dir.getDir());
+
     }
 
     public void detect(){
@@ -39,6 +45,11 @@ public class Detection{
     public String getDetectDir(){
         return detectDir.getDirection();
     }
+    
+    public String getCurrentDir(){
+        return currentDir.getDirection();
+    }
+    
     public void resetDir(){
         detectDir.resetDir(currentDir.getDir());
     }

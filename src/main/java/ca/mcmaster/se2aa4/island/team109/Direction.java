@@ -1,62 +1,135 @@
 package ca.mcmaster.se2aa4.island.team109;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class Direction{
 
-    private int direction;
-    //the direction of Maza:
-    // up is 0, right is 1, down is 2 and left is 3;
-    //since the default positioin of entrance and exit are left and right correspondingly, so default direction is right which is 1
+public class Direction {
 
+    private final Logger logger = LogManager.getLogger();
 
-    public Direction(){
-        direction = 1;      //this constructor is the situation which start from East;
-    }
+    DirectionEnum currentDirection; // all share the same currentDirection 
+    
+    //private DroneProtection droneProtection;
 
-    public void changeL(){          // make a left turn on direction 
-        direction-=1;
-        if(direction<0)
-        direction+=4;
-        direction%=4;
-    }
+  
 
-    public void changeR(){          // make a right turn on direction
-        direction+=1;
-        direction%=4;
-    }
+    public enum DirectionEnum {
 
-    public void Uturn(){            // make a U turn(180 degree turn or turn arround) on direction
-        direction-=2;               //Actually it justs make left turn twice
-        if(direction<0)
-        direction+=4;
-        direction%=4;
-    }
+        NORTH(0),
+        EAST(1),
+        SOUTH(2),
+        WEST(3);
 
-    public String getDirection(){
-        //method to get current direction
-        switch (direction) {
-            case 0:
-                return "N";
-            case 1:
-                return "E";
-            case 2:
-                return "S";
-            case 3:
-                return "W";
-            default:
-                throw new IllegalArgumentException();
+        private final int dir;
+
+        private DirectionEnum(int dir) {
+            this.dir = dir;
+        }
+
+        public int getDir() {
+            return dir;
+        }
+
+        public DirectionEnum turnRight() {
+            switch (this) {
+                case NORTH:
+                    return EAST;
+                case EAST:
+                    return SOUTH;
+                case SOUTH:
+                    return WEST;
+                case WEST:
+                    return NORTH;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + this);
+            }
+        }
+
+        public DirectionEnum turnLeft() {
+            switch (this) {
+                case NORTH:
+                    return WEST;
+                case EAST:
+                    return NORTH;
+                case SOUTH:
+                    return EAST;
+                case WEST:
+                    return SOUTH;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + this);
+            }
+        }
+
+        public DirectionEnum uTurn() {
+            return turnLeft().turnLeft();
+
         }
     }
-    public void resetDir(int dir){
-        direction = dir;
+    
+    public Direction() {
+
+        this.currentDirection = DirectionEnum.WEST; 
+    }
+    public Direction(DirectionEnum enum1) {
+        this.currentDirection = enum1; 
+
+        //this.droneProtection = new DroneProtection();
     }
 
-    public int getDir(){
-        return direction;
+    public void changeL() { // Turn left
+        this.currentDirection = this.currentDirection.turnLeft();
+ 
+
+
+    }
+
+    public void changeR() { // Turn right
+        this.currentDirection = this.currentDirection.turnRight();
+
+    }
+
+    public void Uturn() { // Make a U-turn
+        this.currentDirection = this.currentDirection.uTurn();
+    }
+
+    public String getDirection() { 
+        switch (currentDirection) {
+            case NORTH:
+                return "N";
+            case EAST:
+                return "E";
+            case SOUTH:
+                return "S";
+            case WEST:
+                return "W";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public void resetDir(DirectionEnum dir) { // Reset current direction
+        currentDirection = dir;
+    }
+
+    public DirectionEnum getDir() { // Get current direction as an enum
+        return currentDirection;
+    }
+
+    public DirectionEnum valueOf(String s){
+        switch (s) {
+            case "E":
+                return DirectionEnum.EAST;
+            case "N":
+                return DirectionEnum.NORTH;
+
+            case "S":
+                return DirectionEnum.SOUTH;
+            case "W":
+                return DirectionEnum.WEST;
+            default:
+                return DirectionEnum.EAST;
+        }
+
     }
 }

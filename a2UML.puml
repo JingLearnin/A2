@@ -1,0 +1,20 @@
+@startuml
+
+class LibrarySystem
+class Student
+class Book
+class Auth 
+class Reservation
+class BookDAO
+class UserDAO
+class ReservationDAO 
+
+Book --*BookDAO
+Reservation --*ReservationDAO
+Student --*UserDAO
+
+LibrarySystem --> Auth
+Auth --> UserDAO
+LibrarySystem --> ReservationDAO
+
+@enduml

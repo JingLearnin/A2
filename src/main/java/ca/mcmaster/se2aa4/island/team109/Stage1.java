@@ -4,28 +4,35 @@ import java.io.StringReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import eu.ace_design.island.bot.IExplorerRaid;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+
 
 
 public class Stage1 implements CommandDecider{
     private final Logger logger = LogManager.getLogger();
 
     private String[] command = {"echo", "EAST"};
-    private String location = "OCEAN";
     private Detection rader;
     private int count=-1;
     private boolean findIsland = false;
     private boolean reachIsland = false;
+    private Direction dir;
+    private String turningDirection="unknown"; //will be use in stage2
+    private InformationCollection infoset;
  
 
-    public Stage1(Direction currentdir){
+    public Stage1(Direction currentdir, InformationCollection infoset){
         rader=new Detection(currentdir);
+        dir = currentdir;
+        this.infoset = infoset;
     }
 
     public boolean changeStage(){
         return reachIsland;
+    }
+
+    public CommandDecider changingStage(Direction dir,InformationCollection infoset){
+        infoset.SetUTurningInstruction();
+        return new Stage2(dir,infoset);
     }
     
     public void setcommand(String cmd){command[0]=cmd;}
@@ -38,7 +45,8 @@ public class Stage1 implements CommandDecider{
         return command;
     }
 
-    public void algorithem(String[] record){
+    public void algorithem(Information record){
+        String found = record.getResult();
         if(findIsland&count!=0){
             setcommand("fly");
             count--;
@@ -49,10 +57,20 @@ public class Stage1 implements CommandDecider{
             
         }
         else{
-            if(record[0].equals("GROUND")){
-                count = Integer.parseInt(record[1]);
-                setcommand("heading",rader.getDetectDir());
+            if(found.equals("GROUND")){
+                logger.info(record.getDistance());
+                count = Integer.parseInt(record.getDistance());
+                if(rader.getCurrentDir().equals(rader.getDetectDir())){
+                    setcommand("fly");
+                }
+                else{
+                    setcommand("heading",rader.getDetectDir());
+                    turningDirection = rader.getDetectDir();
+                    infoset.setS1TurningDir(turningDirection);
+                }
+
                 this.findIsland = true;
+
             }else if(rader.getIDA()){
                // setcommand("fly");
                setcommand("fly");

@@ -1,23 +1,44 @@
 package ca.mcmaster.se2aa4.island.team109;
 
-import ca.mcmaster.se2aa4.island.team109.Information;
-import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-public class Translator {
+import java.util.Arrays;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+public class Translator {
+    private final Logger logger = LogManager.getLogger();
+    int initial_budget;
+    String initial_direction;
     
     public Information parse(JSONObject result){
-        String[] a = {"0","1"};
-        a = (result).toString().replaceAll("\"found\":\"", "").replaceAll("range\":", "").replaceAll("\"","").replaceAll("\\{","").replaceAll("\\}","").split(",");
-        try {
-            return new Information(a[0],a[1]);    
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Information(a[0]);
-            
-        }    
         
+        String[] information;
+        information = (result).toString().replaceAll("\\{","").replaceAll("\\}","").toString().split(",");
+        logger.info(Arrays.toString(information));
+        return new Information(information);
     }
 
+    public String[] parseInitialInfo(JSONObject info){
+        String[] information = info.toString(2).replaceAll("\\{","").replaceAll("\\}","").toString().split(",");
+        return information;
+    }
+
+    public void storeValue(String[] information){
+        for ( String i : information ) {
+            if(i.contains("budget")){
+                initial_budget =Integer.parseInt(i.replaceAll("\"budget\":", "").replaceAll("\n", "").replaceAll(" ", ""));
+            }
+            if(i.contains("heading")){
+                initial_direction = i.replaceAll("\"heading\":", "").replaceAll("\n", "").replaceAll(" ", "").replaceAll("\"","");
+            }
+        }
+    }
+
+    public int getBudget(){
+        return initial_budget;
+    }
+    public String getInitalDir(){
+        return initial_direction;
+    }
 }
